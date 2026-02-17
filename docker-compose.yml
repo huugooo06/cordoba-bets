@@ -6,9 +6,14 @@ services:
     image: mongo:latest
     container_name: mongodb_apuestas
     ports:
-      - "27017:27017" 
+      - "27017:27017"
     volumes:
-      - mongo_data:/data/db 
+      # Opción 1: Carpeta local (Segura: los datos quedan en tu carpeta del proyecto 'mongo_data')
+      - ./mongo_data:/data/db
+      # Opción 2: Volumen interno (Si prefieres ocultarlo, descomenta abajo y comenta arriba)
+      # - mongo_data:/data/db
+    networks:
+      - app-network
     restart: always
 
   # --- SERVICIO DE BACKEND (NODE.JS / EXPRESS) ---
@@ -22,10 +27,12 @@ services:
     depends_on:
       - db
     environment:
-      MONGODB_URI: mongodb://db:27017/mis_apuestas_db
+      MONGODB_URI: mongodb://mongodb_apuestas:27017/mis_apuestas_db
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
+    networks:
+      - app-network
     restart: always
 
   # --- SERVICIO DE FRONTEND (VUE.JS) ---
@@ -35,16 +42,23 @@ services:
       dockerfile: Dockerfile
     container_name: apuestas_frontend
     ports:
-      - "5173:5173" 
+      - "5173:5173"
     depends_on:
-      - api 
+      - api
     volumes:
       - ./frontend:/usr/src/app
       # LÍNEA CRÍTICA: Deshabilita el montaje de node_modules del HOST
       # Esto fuerza a Docker a usar el node_modules INSTALADO DENTRO del contenedor
-      - /usr/src/app/node_modules 
+      - /usr/src/app/node_modules
+    networks:
+      - app-network
     restart: always
 
 # --- VOLUMENES DE DATOS ---
 volumes:
   mongo_data:
+
+    # --- REDES ---
+networks:
+  app-network:
+    driver: bridge

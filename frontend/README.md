@@ -76,4 +76,11 @@ This project is built with [Vuetify](https://vuetifyjs.com/en/), a UI Library wi
 ## 📑 License
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2016-present Vuetify, LLC
+
+---
+
+## 🛠️ **Technology Stack**
+- **Vue.js**
+- **Node.js**
+- **Docker**
+
